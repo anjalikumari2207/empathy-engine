@@ -79,7 +79,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open your browser at: **http://localhost:5000**
+Open your browser at: **https://empathy-engine-0o7m.onrender.com**
 
 ---
 

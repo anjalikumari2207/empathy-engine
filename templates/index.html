@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Empathy Engine · AI Voice Synthesizer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:ital,wght@0,300;0,400;1,300&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+  <div class="noise-overlay"></div>
+
+  <!-- Header -->
+  <header class="site-header">
+    <div class="logo-mark">
+      <span class="logo-icon">◈</span>
+      <span class="logo-text">EMPATHY<em>ENGINE</em></span>
+    </div>
+    <div class="header-tag">v1.0 · Emotional TTS</div>
+  </header>
+
+  <!-- Hero -->
+  <section class="hero">
+    <div class="hero-eyebrow">AI · VOICE · SYNTHESIS</div>
+    <h1 class="hero-title">
+      Words that<br>
+      <span class="gradient-text">feel something.</span>
+    </h1>
+    <p class="hero-sub">Type anything. The engine reads the emotion — and speaks it with feeling.</p>
+  </section>
+
+  <!-- Main App -->
+  <main class="app-shell">
+
+    <!-- Input Panel -->
+    <div class="panel input-panel">
+      <div class="panel-label">01 · INPUT</div>
+      <div class="textarea-wrap">
+        <textarea
+          id="textInput"
+          placeholder="e.g. I just won first place! This is unbelievable!!"
+          maxlength="500"
+          spellcheck="false"
+        ></textarea>
+        <div class="char-counter"><span id="charCount">0</span>/500</div>
+      </div>
+      <div class="sample-pills">
+        <span class="pill-label">Try:</span>
+        <button class="pill" data-text="I just won the championship! This is the best day of my life!!">🤩 Excited</button>
+        <button class="pill" data-text="I can't believe they canceled the project after all that work. I'm devastated.">😢 Sad</button>
+        <button class="pill" data-text="This keeps breaking every single time. This is absolutely ridiculous!">😠 Angry</button>
+        <button class="pill" data-text="Wait, what? They're shutting down? I had no idea this was happening.">😲 Surprised</button>
+        <button class="pill" data-text="I'm a bit worried about the timeline. Something doesn't seem right.">😟 Concerned</button>
+        <button class="pill" data-text="The quarterly report looks fine. Numbers are within expected ranges.">😐 Neutral</button>
+      </div>
+      <button class="synthesize-btn" id="synthesizeBtn">
+        <span class="btn-inner">
+          <span class="btn-icon">▶</span>
+          <span class="btn-text">Synthesize Speech</span>
+        </span>
+        <div class="btn-loading" id="btnLoading">
+          <div class="spinner"></div>
+          <span>Analyzing emotion…</span>
+        </div>
+      </button>
+    </div>
+
+    <!-- Output Panel -->
+    <div class="panel output-panel" id="outputPanel">
+      <div class="panel-label">02 · OUTPUT</div>
+
+      <!-- Emotion display -->
+      <div class="emotion-display" id="emotionDisplay" style="display:none">
+        <div class="emotion-badge" id="emotionBadge">
+          <span class="emotion-emoji" id="emotionEmoji">😊</span>
+          <div class="emotion-info">
+            <div class="emotion-label" id="emotionLabel">HAPPY</div>
+            <div class="emotion-conf" id="emotionConf">Confidence: 88%</div>
+          </div>
+          <div class="intensity-tag" id="intensityTag">HIGH</div>
+        </div>
+
+        <!-- Voice params -->
+        <div class="voice-params" id="voiceParams">
+          <div class="vp-item">
+            <div class="vp-bar-wrap">
+              <div class="vp-bar" id="rateBar"></div>
+            </div>
+            <div class="vp-label">RATE</div>
+            <div class="vp-value" id="rateVal">—</div>
+          </div>
+          <div class="vp-item">
+            <div class="vp-bar-wrap">
+              <div class="vp-bar pitch-bar" id="pitchBar"></div>
+            </div>
+            <div class="vp-label">PITCH</div>
+            <div class="vp-value" id="pitchVal">—</div>
+          </div>
+          <div class="vp-item">
+            <div class="vp-bar-wrap">
+              <div class="vp-bar vol-bar" id="volBar"></div>
+            </div>
+            <div class="vp-label">VOLUME</div>
+            <div class="vp-value" id="volVal">—</div>
+          </div>
+        </div>
+
+        <!-- Emotion score breakdown -->
+        <div class="score-grid" id="scoreGrid"></div>
+      </div>
+
+      <!-- Audio Player -->
+      <div class="audio-section" id="audioSection" style="display:none">
+        <div class="waveform-viz" id="waveformViz">
+          <canvas id="waveCanvas" width="400" height="60"></canvas>
+        </div>
+        <div class="player-controls">
+          <button class="play-btn" id="playBtn">▶</button>
+          <div class="progress-track" id="progressTrack">
+            <div class="progress-fill" id="progressFill"></div>
+          </div>
+          <span class="duration" id="durationLabel">0:00</span>
+        </div>
+        <audio id="audioPlayer" preload="auto"></audio>
+        <a class="download-link" id="downloadLink" download="empathy-engine-audio.mp3">
+          ↓ Download MP3
+        </a>
+      </div>
+
+      <!-- Empty state -->
+      <div class="empty-state" id="emptyState">
+        <div class="empty-icon">◈</div>
+        <p>Your emotionally synthesized audio will appear here.</p>
+      </div>
+
+      <!-- Error state -->
+      <div class="error-state" id="errorState" style="display:none">
+        <div class="error-icon">⚠</div>
+        <p id="errorMsg">Something went wrong.</p>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- Emotion Map Legend -->
+  <section class="legend-section">
+    <div class="legend-title">Emotion → Voice Mapping</div>
+    <div class="legend-grid" id="legendGrid"></div>
+  </section>
+
+  <footer class="site-footer">
+    <p>Empathy Engine · Built with Python, Flask, gTTS & VADER · <span class="mono">emotion_engine.py + voice_engine.py</span></p>
+  </footer>
+
+<script src="/static/js/app.js"></script>
+</body>
+</html>
